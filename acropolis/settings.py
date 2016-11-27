@@ -16,6 +16,11 @@ class Config(object):
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    ROCKET_URL = ''
+    ROCKET_USER = ''
+    ROCKET_PASS = ''
+    ROCKET_DOMAIL = ''
+
 
 class ProdConfig(Config):
     """Production configuration."""

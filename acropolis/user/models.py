@@ -44,6 +44,7 @@ class User(UserMixin, SurrogatePK, Model):
         db.Model.__init__(self, username=username, email=email, **kwargs)
         if password:
             self.set_password(password)
+            self.create_rocket_user(password)
         else:
             self.password = None
 
@@ -54,6 +55,25 @@ class User(UserMixin, SurrogatePK, Model):
     def check_password(self, value):
         """Check password."""
         return bcrypt.check_password_hash(self.password, value)
+
+    def create_rocket_user(self, password):
+        """Creates the first instance of the user with the password."""
+        from rocketchat.api import RocketChatAPI
+        from flask import current_app
+
+        rocket_settings={
+            'username': current_app.config.get('ROCKET_USER'),
+            'password': current_app.config.get('ROCKET_PASS'),
+            'domain': current_app.config.get('ROCKET_DOMAIL')}
+        api = RocketChatAPI(settings=rocket_settings)
+
+        # After this the password will not be known by us
+        rocket_user = {
+            "name": "%s %s" % (self.first_name, self.last_name),
+            "email": self.email,
+            "password": self.password,
+            "username": self.username,
+        }
 
     @property
     def full_name(self):
